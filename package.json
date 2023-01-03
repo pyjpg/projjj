@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "firebase-react-hooks": "^0.8.0",
     "git": "^0.1.5"
   }
 }

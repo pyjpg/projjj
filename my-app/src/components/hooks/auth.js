@@ -56,12 +56,41 @@ export function useLogin() {
     const toast = useToast();
     const navigate = useNavigate();
   
-    async function register({
-      username,
-      email,
-      password,
-      redirectTo = DASHBOARD,
+    async function register({ username, email, password, redirectTo = DASHBOARD }) {
       setLoading(true);
+  
+      try {
+        // Create a new user with the given email and password
+        const { user } = await auth.createUserWithEmailAndPassword(email, password);
+  
+        // Update the user's display name
+        await user.updateProfile({ displayName: username });
+  
+        toast({
+          title: "You are registered and logged in",
+          status: "success",
+          isClosable: true,
+          position: "top",
+          duration: 5000,
+        });
+        navigate(redirectTo);
+      } catch (error) {
+        toast({
+          title: "Registration failed",
+          description: error.message,
+          status: "error",
+          isClosable: true,
+          position: "top",
+          duration: 5000,
+        });
+  
+        return false;
+      } finally {
+        setLoading(false);
+        return true;
+      }
+    }
+    return { register, isLoading };
   }
   export function useLogout() {
     const [signOut, isLoading, error] = useSignOut(auth);
