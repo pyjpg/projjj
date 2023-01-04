@@ -4,16 +4,34 @@ import {
 } from "firebase/auth";
 import { auth, db } from "lib/firebase";
 import { DASHBOARD, LOGIN } from 'lib/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthState, useSignOut } from 'react-firebase-hooks/auth';
 import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { setDoc, doc, } from "firebase/firestore";
+import { setDoc, doc,getDoc } from "firebase/firestore";
 import Dashboard from "components/dashboard";
 import isUsernameExists from "components/utils/isUsernameExists";
 
 export function useAuth() {
-    const {authUser, isLoading, error} = useAuthState(auth);
+    const [authUser, authLoading, error] = useAuthState(auth);
+    const [isLoading, setLoading] = useState(true);
+    const [user, setUser] = useState(null);
+
+    useEffect(()=>{
+      async function fetchData() {
+        setLoading(true);
+        const ref = doc(db, "users", authUser.uid)
+        const docSnap = await getDoc(ref)
+        setUser(docSnap.data())
+        setLoading(false);
+      }
+
+      if (!authLoading) {
+        if(authUser) fetchData();
+        else setLoading(false) // not signed in
+      }
+    }, [authLoading]);
+
     return { user: authUser, isLoading, error};
 }
 

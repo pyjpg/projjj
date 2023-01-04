@@ -1,7 +1,7 @@
-import Navbar from "components/navbar";
+import Navbar from "components/layout/navbar";
 
 export default function Dashboard() {
   return (
-    <div><Navbar/></div>
+    <div></div>
   )
 }
